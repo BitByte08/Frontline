@@ -1,15 +1,17 @@
 import express from "express";
 import fetch from "node-fetch";
 import cors from "cors";
-import path from "path";
+import "./env.js";
+import {api_key} from "./api.js";
+
+
 const port = 8080;
 const app = express();
 app.use(cors());
-const API_KEY = "";
 const serverUrl = "https://asia.api.riotgames.com";
 
 
-app.get('/api/summoner/:riotName/:riotTag', async (req, res) => {
+app.get('/summoner/:riotName/:riotTag', async (req, res) => {
     const riotName = req.params.riotName;
     const riotTag = req.params.riotTag;
     const riotAccountUrl = `${serverUrl}/riot/account/v1/accounts/by-riot-id/${riotName}/${riotTag}`;
@@ -18,7 +20,7 @@ app.get('/api/summoner/:riotName/:riotTag', async (req, res) => {
         const accountResponse = await fetch(riotAccountUrl, {
             method: "GET",
             headers: {
-                "X-Riot-Token" : API_KEY,
+                "X-Riot-Token" : api_key,
             },
         });
         if(!accountResponse.ok){
@@ -28,13 +30,13 @@ app.get('/api/summoner/:riotName/:riotTag', async (req, res) => {
         const summonersResponse = await fetch(`https://kr.api.riotgames.com/lol/summoner/v4/summoners/by-puuid/${accountData.puuid}`,{
             method: "GET",
             headers: {
-                "X-Riot-Token" : API_KEY,
+                "X-Riot-Token" : api_key,
             },
         });
         const summonersData = await summonersResponse.json();
         res.json(summonersData);
     } catch (err) {
-        res.status(404).send("Could not find a response");
+        res.status(404).send(err);
     }
 })
 
