@@ -34,7 +34,23 @@ app.get('/summoner/:riotName/:riotTag', async (req, res) => {
             },
         });
         const summonersData = await summonersResponse.json();
-        res.json(summonersData);
+        const leagueResponse = await fetch(`https://kr.api.riotgames.com/lol/league/v4/entries/by-puuid/${accountData.puuid}`,{
+            method: "GET",
+            headers: {
+                "X-Riot-Token" : api_key,
+            }
+        })
+        const leagueData = await leagueResponse.json();
+        const response = {
+            "name" : riotName,
+            "tag" : riotTag,
+            "level" : summonersData.summonerLevel,
+            "flexTier" : leagueData[0].tier,
+            "flexRank" : leagueData[0].rank,
+            "soloTier" : leagueData[1].tier,
+            "soloRank" : leagueData[1].rank
+        }
+        res.json(response);
     } catch (err) {
         res.status(404).send(err);
     }
