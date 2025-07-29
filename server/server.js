@@ -10,7 +10,6 @@ const app = express();
 app.use(cors());
 const serverUrl = "https://asia.api.riotgames.com";
 
-
 app.get('/summoner/:riotName/:riotTag', async (req, res) => {
     const riotName = req.params.riotName;
     const riotTag = req.params.riotTag;
